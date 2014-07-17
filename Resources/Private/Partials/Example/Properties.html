@@ -13,7 +13,10 @@
 			<f:translate key="tx_uploadexample_domain_model_example.image" />
 		</td>
 		<td>
-			<f:if condition="{example.image}"><f:image image="{example.image}" alt="" width="200"/></f:if>
+			<f:if condition="{example.image}"><f:image image="{example.image}" alt="" title="{example.image.title}" width="200"/></f:if>
+			<p style="font-style: italic;">
+				{example.image.description}
+			</p>
 		</td>
 	</tr>
 	<tr>
@@ -22,7 +25,10 @@
 		</td>
 		<td>
 			<f:for each="{example.imageCollection}" as="image">
-				<f:image image="{image}" alt="" width="200"/>
+				<f:image image="{image}" alt="" title="{image.title}" width="200"/> 
+				<p style="font-style: italic;">
+					{image.description}
+				</p>
 			</f:for>
 		</td>
 	</tr>

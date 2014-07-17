@@ -38,10 +38,61 @@ class FileReference extends \TYPO3\CMS\Extbase\Domain\Model\FileReference {
 	protected $uidLocal;
 
 	/**
+	 * title 
+	 *
+	 * @var string
+	 */
+	protected $title;
+
+	/**
+	 * description
+	 *
+	 * @var string
+	 */
+	protected $description;
+
+	/**
 	 * @param \TYPO3\CMS\Core\Resource\FileReference $originalResource
 	 */
 	public function setOriginalResource(\TYPO3\CMS\Core\Resource\FileReference $originalResource) {
 		$this->originalResource = $originalResource;
 		$this->uidLocal = $originalResource->getOriginalFile()->getUid();
 	}
+
+	/**
+	 * Set title
+	 *
+	 * @param string $title
+	 */
+	public function setTitle($title) {
+		$this->title = $title;
+	}
+
+	/**
+	 * Get title
+	 *
+	 * @return string
+	 */
+	public function getTitle() {
+		return $this->title;
+	}
+
+	/**
+	 * Set description
+	 *
+	 * @param string $description
+	 */
+	public function setDescription($description) {
+		$this->description = $description;
+	}
+
+	/**
+	 * Get description
+	 *
+	 * @return string
+	 */
+	public function getDescription() {
+		return $this->description;
+	}
+
 }

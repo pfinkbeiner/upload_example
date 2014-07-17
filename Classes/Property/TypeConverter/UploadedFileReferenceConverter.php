@@ -141,12 +141,12 @@ class UploadedFileReferenceConverter extends \TYPO3\CMS\Extbase\Property\TypeCon
 
 		if ($source['error'] !== \UPLOAD_ERR_OK) {
 			switch ($source['error']) {
-				case \UPLOAD_ERR_INI_SIZE:
-				case \UPLOAD_ERR_FORM_SIZE:
-				case \UPLOAD_ERR_PARTIAL:
-					return new \TYPO3\CMS\Extbase\Error\Error(\TYPO3\Flow\Utility\Files::getUploadErrorMessage($source['error']), 1264440823);
-				default:
-					return new \TYPO3\CMS\Extbase\Error\Error('An error occurred while uploading. Please try again or contact the administrator if the problem remains', 1340193849);
+			case \UPLOAD_ERR_INI_SIZE:
+			case \UPLOAD_ERR_FORM_SIZE:
+			case \UPLOAD_ERR_PARTIAL:
+				return new \TYPO3\CMS\Extbase\Error\Error(\TYPO3\Flow\Utility\Files::getUploadErrorMessage($source['error']), 1264440823);
+			default:
+				return new \TYPO3\CMS\Extbase\Error\Error('An error occurred while uploading. Please try again or contact the administrator if the problem remains', 1340193849);
 			}
 		}
 
@@ -194,7 +194,7 @@ class UploadedFileReferenceConverter extends \TYPO3\CMS\Extbase\Property\TypeCon
 		$uploadFolder = $this->resourceFactory->retrieveFileOrFolderObject($uploadFolderId);
 		$uploadedFile =  $uploadFolder->addUploadedFile($uploadInfo, $conflictMode);
 
-		$fileReferenceModel = $this->createFileRefrenceFromFalFileObject($uploadedFile);
+		$fileReferenceModel = $this->createFileRefrenceFromFalFileObject($uploadedFile, $uploadInfo);
 
 		if (isset($uploadInfo['submittedFile']['resourcePointer']) && $replaceResource) {
 			$this->removeFileReference($this->hashService->validateAndStripHmac($uploadInfo['submittedFile']['resourcePointer']));
@@ -222,9 +222,10 @@ class UploadedFileReferenceConverter extends \TYPO3\CMS\Extbase\Property\TypeCon
 
 	/**
 	 * @param File $file
+	 * @param array $additionalAttributes
 	 * @return \Helhum\UploadExample\Domain\Model\FileReference
 	 */
-	protected function createFileRefrenceFromFalFileObject(File $file) {
+	protected function createFileRefrenceFromFalFileObject(File $file, $additionalAttributes) {
 		$fileReference = $this->resourceFactory->createFileReferenceObject(
 			array(
 				'uid_local' => $file->getUid(),
@@ -232,17 +233,23 @@ class UploadedFileReferenceConverter extends \TYPO3\CMS\Extbase\Property\TypeCon
 				'uid' => uniqid('NEW_'),
 			)
 		);
-		return $this->createFileReferenceFromFalFileReferenceObject($fileReference);
+		return $this->createFileReferenceFromFalFileReferenceObject($fileReference, $additionalAttributes);
 	}
 
 	/**
 	 * @param FileReference $fileReference
+	 * @param array $additionalAttributes
 	 * @return \Helhum\UploadExample\Domain\Model\FileReference
 	 */
-	protected function createFileReferenceFromFalFileReferenceObject(FileReference $fileReference) {
+	protected function createFileReferenceFromFalFileReferenceObject(FileReference $fileReference, $additionalAttributes) {
 		/** @var $fileReferenceModel \Helhum\UploadExample\Domain\Model\FileReference */
 		$fileReferenceModel = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Domain\\Model\\FileReference');
 		$fileReferenceModel->setOriginalResource($fileReference);
+
+		// I would recommend to escape all incomming data to 
+		// ensure that the data which will be stored in DB is secure! 
+		$fileReferenceModel->setTitle(mysql_real_escape_string( htmlspecialchars( trim($additionalAttributes['title']))));
+		$fileReferenceModel->setDescription( mysql_real_escape_string( htmlspecialchars( trim($additionalAttributes['description']))));
 
 		return $fileReferenceModel;
 	}
