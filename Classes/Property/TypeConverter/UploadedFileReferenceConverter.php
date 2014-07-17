@@ -246,11 +246,12 @@ class UploadedFileReferenceConverter extends \TYPO3\CMS\Extbase\Property\TypeCon
 		$fileReferenceModel = $this->objectManager->get('TYPO3\\CMS\\Extbase\\Domain\\Model\\FileReference');
 		$fileReferenceModel->setOriginalResource($fileReference);
 
-		// I would recommend to escape all incomming data to 
-		// ensure that the data which will be stored in DB is secure! 
-		$fileReferenceModel->setTitle(mysql_real_escape_string( htmlspecialchars( trim($additionalAttributes['title']))));
-		$fileReferenceModel->setDescription( mysql_real_escape_string( htmlspecialchars( trim($additionalAttributes['description']))));
+		$title = trim($additionalAttributes['title']); 
+		$fileReferenceModel->setDescription($title === '' ? NULL : $title);
 
+		$description = trim($additionalAttributes['description']); 
+		$fileReferenceModel->setDescription($description === '' ? NULL : $description);
+ 
 		return $fileReferenceModel;
 	}
 }
